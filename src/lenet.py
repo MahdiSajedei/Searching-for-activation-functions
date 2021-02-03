@@ -106,7 +106,7 @@ def cifar10_lenet5_generator(num_classes, data_format=None):
         inputs = batch_norm_relu(inputs, is_training, data_format)
 
         inputs = tf.layers.average_pooling2d(
-            inputs=inputs, pool_size=2 , strides=2 , padding='same',data_format=data_format)
+            inputs=inputs, pool_size=2 , strides=2 , padding='VALID',data_format=data_format)
         inputs = tf.identity(inputs, 'second_avg_pool')
         
         #inputs = tf.reshape(inputs, [-1, 400])
