@@ -349,13 +349,12 @@ def main(unused_argv):
         'batch_size': FLAGS.batch_size,
       })
 
-      #for _ in range(FLAGS.train_epochs // FLAGS.epochs_per_eval):
-      for _ in range(4):
+      for _ in range(FLAGS.train_epochs // FLAGS.epochs_per_eval):
+      #for _ in range(4):
         tensors_to_log = {
             'learning_rate': 'learning_rate',
             'cross_entropy': 'cross_entropy',
-            'train_accuracy': 'train_accuracy',
-            'test_accuracy' : 'test_accuracy'
+            'train_accuracy': 'train_accuracy'
         }
 
         logging_hook = tf.train.LoggingTensorHook(
