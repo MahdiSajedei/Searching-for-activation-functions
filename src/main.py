@@ -283,8 +283,6 @@ def main(unused_argv):
       outputs,prob,value = net.neural_search()
       hyperparams = net.gen_hyperparams(outputs)
       tf.assert_rank_at_least(tf.convert_to_tensor(prob),1,message="prob is the fucking problem")
-      epoch = open("./epoch.txt", "a")
-      epoch.write(`i`+ "\n")
       print("number:",i)
       c_1=1
       c_2=0.01
@@ -352,8 +350,7 @@ def main(unused_argv):
         tensors_to_log = {
             'learning_rate': 'learning_rate',
             'cross_entropy': 'cross_entropy',
-            'train_accuracy': 'train_accuracy',
-            'test_accuracy' : 'test_accuracy'
+            'train_accuracy': 'train_accuracy
         }
 
         logging_hook = tf.train.LoggingTensorHook(
