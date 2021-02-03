@@ -25,7 +25,6 @@ import sys
 import tensorflow as tf
 import numpy as np
 
-import TensorFI as ti
 #import childnetwork as resnet_model
 import lenet as lenet_model
 from rnn_controller import Network
