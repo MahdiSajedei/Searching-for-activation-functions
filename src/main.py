@@ -283,6 +283,8 @@ def main(unused_argv):
       outputs,prob,value = net.neural_search()
       hyperparams = net.gen_hyperparams(outputs)
       tf.assert_rank_at_least(tf.convert_to_tensor(prob),1,message="prob is the fucking problem")
+      #epoch = open("./epoch.txt", "a")
+      #epoch.write(`i`+ "\n")
       print("number:",i)
       c_1=1
       c_2=0.01
@@ -364,9 +366,11 @@ def main(unused_argv):
         # Evaluate the model and print results
         eval_results = cifar_classifier.evaluate(
             input_fn=lambda: input_fn(False, FLAGS.data_dir, FLAGS.batch_size))
-
-        result = open("./result.txt", "a")
-        result.write(`i`+ ':' + `eval_results` +  "\n")
+        
+        with open("result","w") as q:
+             q.write(eval_results+'\n')
+        #result = open("./result.txt", "a")
+        #result.write(`i`+ ':' + `eval_results` +  "\n")
         print(eval_results)
 
         old_prob = tf.identity(prob)
