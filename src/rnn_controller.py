@@ -35,12 +35,53 @@ class Network(object):
         # self.unary = {1:lambda x:x ,2:lambda x: -x, 3: lambda x: tf.maximum(x,0), 4:lambda x : tf.pow(x,2),5:tf.tanh}
         # binary = {1:lambda x,y: x+y,2:lambda x,y:x*y,3:lambda x,y:x-y,4:lambda x,y:tf.maximum(x,y),5:lambda x,y: tf.sigmoid(x)*y}
         # inputs = {1:lambda x:x , 2:lambda x:0, 3: lambda x:3.14159265,4: lambda x : 1, 5: lambda x: 1.61803399}
-
+    
     def weight_variable(self, shape, name):
-        return tf.Variable(tf.random_normal(shape=shape), name=name)
+        weight=tf.Variable(tf.random_normal(shape=shape), name=name)
+        #weight=tf.Variable(tf.ones(shape=shape), name=name)
+
+        #a= np.array([[1 , 1 , 1 ,1],
+        #             [1 , 1 , 1 ,1]])
+        #weight.assign_add(a)
+        #we = open("./weight.txt", "a")
+        #tf.print("tensors:", weight, output_stream=sys.stdout)
+        #we.write(`b`)
+        #wem = open("./weight_modify.txt", "a")
+        #a=tf.Print(weight,[weight])
+        #we.write(`a`)
+        #with tf.Session() as sess:
+         #    b = sess.run(weight, feed_dict={weight: 1})
+             #print(a)
+          #   we.write(`b`)
+             #a += 1
+             #wem.write(`a`)
+        #weight = weight + 1
+        #weight += 1
+        return weight
+
+
+    def weight_variablee(self, shape, name):
+        weight=tf.Variable(tf.random_normal(shape=shape), name=name)
+        #a= np.array([[1 ],
+        #             [1 ]])
+        #weight.assign_add(a)
+        return weight
 
     def bias_variable(self, shape, name):
-        return tf.Variable(tf.random_normal(shape=shape), name=name)
+        bias = tf.Variable(tf.random_normal(shape=shape), name=name)
+        #a= np.array([[1 ],
+         #            [1 ],
+          #           [1 ],
+           #          [1 ]])
+        #bias.assign_add(a)
+        return bias
+
+
+    def bias_variablee(self, shape, name):
+        bias = tf.Variable(tf.random_normal(shape=shape), name=name)
+        #a= np.array([1 ])
+        #bias.assign_add(a)
+        return bias
 
     def init_controller_vars(self):
         Wc = self.weight_variable(shape=[self.n_hidden, self.n_input], name="w_controller")
@@ -48,8 +89,8 @@ class Network(object):
         return Wc, bc
 
     def init_value_vars(self):
-        Wv = self.weight_variable(shape=[self.n_hidden, 1], name="w_controller")
-        bv = self.bias_variable(shape=[1], name="b_controller")
+        Wv = self.weight_variablee(shape=[self.n_hidden, 1], name="w_controller")
+        bv = self.bias_variablee(shape=[1], name="b_controller")
         return Wv, bv
 
     def neural_search(self):

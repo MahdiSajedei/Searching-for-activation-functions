@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-"""Runs a ResNet model on the CIFAR-10 dataset."""
+"""Runs a lenet model on the CIFAR-10 dataset."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -23,11 +23,16 @@ import os
 import sys
 
 import tensorflow as tf
+import numpy as np
 
-import childnetwork as resnet_model
+import TensorFI as ti
+#import childnetwork as resnet_model
+import lenet as lenet_model
 from rnn_controller import Network
 from config import Config
 from parser import Parser
+from tensorflow.python import debug as tf_debug
+#import pdb; pdb.set_trace()
 
 parser = argparse.ArgumentParser()
 
@@ -35,16 +40,16 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--data_dir', type=str, default='../data/cifar10_data',
                     help='The path to the CIFAR-10 data directory.')
 
-parser.add_argument('--model_dir', type=str, default='/tmp/cifar10_model',
+parser.add_argument('--model_dir', type=str, default='../tmp/cifar10_model',
                     help='The directory where the model will be stored.')
 
-parser.add_argument('--resnet_size', type=int, default=20,
-                    help='The size of the ResNet model to use. We set as 20 by default following the paper')
+#parser.add_argument('--resnet_size', type=int, default=20,
+#                    help='The size of the ResNet model to use. We set as 20 by default following the paper')
 
-parser.add_argument('--train_epochs', type=int, default=100,
+parser.add_argument('--train_epochs', type=int, default=50,
                     help='The number of epochs to train the RNN controller to generate the Activation function')
 
-parser.add_argument('--epochs_per_eval', type=int, default=10,
+parser.add_argument('--epochs_per_eval', type=int, default=5,
                     help='The number of epochs to run in between evaluations.')
 
 parser.add_argument('--batch_size', type=int, default=5,
@@ -187,8 +192,10 @@ def cifar10_model_fn(features, labels, mode, params):
   """Model function for CIFAR-10."""
   tf.summary.image('images', features, max_outputs=6)
 
-  network = resnet_model.cifar10_resnet_v2_generator(
-          params['resnet_size'], _NUM_CLASSES, params['data_format'])
+  #network = resnet_model.cifar10_resnet_v2_generator(
+  #        params['resnet_size'], _NUM_CLASSES, params['data_format'])
+  network = lenet_model.cifar10_lenet5_generator(
+           _NUM_CLASSES, params['data_format'])
 
   inputs = tf.reshape(features, [-1, _HEIGHT, _WIDTH, _DEPTH])
   logits = network(inputs, mode == tf.estimator.ModeKeys.TRAIN)
@@ -219,7 +226,7 @@ def cifar10_model_fn(features, labels, mode, params):
     initial_learning_rate = 0.1 * params['batch_size'] / 128
     batches_per_epoch = _NUM_IMAGES['train'] / params['batch_size']
     global_step = tf.train.get_or_create_global_step()
-
+     
     # Multiply the learning rate by 0.1 at 100, 150, and 200 epochs.
     boundaries = [int(batches_per_epoch * epoch) for epoch in [100, 150, 200]]
     values = [initial_learning_rate * decay for decay in [1, 0.1, 0.01, 0.001]]
@@ -276,6 +283,9 @@ def main(unused_argv):
       outputs,prob,value = net.neural_search()
       hyperparams = net.gen_hyperparams(outputs)
       tf.assert_rank_at_least(tf.convert_to_tensor(prob),1,message="prob is the fucking problem")
+      epoch = open("./epoch.txt", "a")
+      epoch.write(`i`+ "\n")
+      print("number:",i)
       c_1=1
       c_2=0.01
       if i >0 :
@@ -294,12 +304,18 @@ def main(unused_argv):
           tf.assert_rank(entropy_penalty,0,message="entropy_penalty is computed wrongly, wrong rank")
           total_loss = L_clip - c_1*L_vf + c_2 * entropy_penalty
           tf.summary.scalar('loss',total_loss)
+          print("first1")
 
       tf_config=tf.ConfigProto(allow_soft_placement=True, log_device_placement=True)
       tf_config.gpu_options.allow_growth = True
       sess = tf.Session(config=tf_config)
+      #sess = tf_debug.LocalCLIDebugWrapperSession(sess)
+
       sess.run(tf.global_variables_initializer())
+      
       sess.run(tf.local_variables_initializer())
+      #tf_debug.LocalCLIDebugWrapperSession(sess)
+
       merged = tf.summary.merge_all()
       train_writer = tf.summary.FileWriter('train',sess.graph)
 
@@ -307,6 +323,15 @@ def main(unused_argv):
       #run_config = tf.estimator.RunConfig().replace(session_config=tf.ConfigProto(log_device_placement=True),save_checkpoints_secs=1e9)
       print(sess.run(hyperparams))
       print(sess.run(value))
+      with open("value","w") as c:
+           c.write(' '.join(map(str,sess.run(value))))
+           c.write('\n')
+      
+      with open("hyperparams","w") as d:
+           d.writelines(' '.join(map(str,sess.run(hyperparams)))+'\n')
+           
+      
+  
       #tmp is a temporary file which stores the encoded activation function,
       # it is used by main.py to pass the activation function to the childnetwork which reads from the file as the the program is being run.
       # It also acts as a cache file to store the final activation function found the agorthim 
@@ -317,16 +342,18 @@ def main(unused_argv):
       cifar_classifier = tf.estimator.Estimator(
       model_fn=cifar10_model_fn, model_dir=FLAGS.model_dir, config=run_config,
       params={
-        'resnet_size': FLAGS.resnet_size,
+       # 'resnet_size': FLAGS.resnet_size,
         'data_format': FLAGS.data_format,
         'batch_size': FLAGS.batch_size,
       })
 
-      for _ in range(FLAGS.train_epochs // FLAGS.epochs_per_eval):
+      #for _ in range(FLAGS.train_epochs // FLAGS.epochs_per_eval):
+      for _ in range(1):
         tensors_to_log = {
             'learning_rate': 'learning_rate',
             'cross_entropy': 'cross_entropy',
-            'train_accuracy': 'train_accuracy'
+            'train_accuracy': 'train_accuracy',
+            'test_accuracy' : 'test_accuracy'
         }
 
         logging_hook = tf.train.LoggingTensorHook(
@@ -335,21 +362,30 @@ def main(unused_argv):
         cifar_classifier.train(
             input_fn=lambda: input_fn(
                 True, FLAGS.data_dir, FLAGS.batch_size, FLAGS.epochs_per_eval))
-
+        print("second2")
         # Evaluate the model and print results
         eval_results = cifar_classifier.evaluate(
             input_fn=lambda: input_fn(False, FLAGS.data_dir, FLAGS.batch_size))
+
+        result = open("./result.txt", "a")
+        result.write(`i`+ ':' + `eval_results` +  "\n")
         print(eval_results)
 
         old_prob = tf.identity(prob)
         old_value = tf.identity(value)
+        print("third3")
 
         if i >0 :
           print("Training RNN")
           tr_cont_step = net.update(total_loss)
           sess.run(tf.global_variables_initializer())
+          # Add the fault injection code here to instrument the graph
+          #fi = ti.TensorFI(sess, name = "lenet", logLevel = 10, disableInjections = True)
           _ = sess.run(tr_cont_step, feed_dict={val_accuracy : eval_results["accuracy"]})
+          #acc_test = open("./acc_test.txt", "a")
+          #acc_test.write(`i`+ ':' + `acc` +  "\n")
           print("RNN Trained")
+        
   assert A_t !=tf.zeros((1,1)),  "Advantage function was not computed correctly"
 
 
