@@ -348,7 +348,7 @@ def main(unused_argv):
       })
 
       #for _ in range(FLAGS.train_epochs // FLAGS.epochs_per_eval):
-      for _ in range(1):
+      for _ in range(2):
         tensors_to_log = {
             'learning_rate': 'learning_rate',
             'cross_entropy': 'cross_entropy',
