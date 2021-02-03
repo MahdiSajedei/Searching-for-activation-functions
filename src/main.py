@@ -283,7 +283,7 @@ def main(unused_argv):
       hyperparams = net.gen_hyperparams(outputs)
       tf.assert_rank_at_least(tf.convert_to_tensor(prob),1,message="prob is the fucking problem")
       epoch = open("./epoch.txt", "a")
-      epoch.write(i)
+      epoch.write(str(i))
       print("number:",i)
       c_1=1
       c_2=0.01
@@ -370,7 +370,7 @@ def main(unused_argv):
              q.write(eval_results)
         #result = open("./result.txt", "a")
         #result.write(`i`+ ':' + `eval_results` +  "\n")
-        print(eval_results)
+        print(str(eval_results))
 
         old_prob = tf.identity(prob)
         old_value = tf.identity(value)
