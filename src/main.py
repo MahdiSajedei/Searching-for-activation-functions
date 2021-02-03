@@ -283,7 +283,7 @@ def main(unused_argv):
       hyperparams = net.gen_hyperparams(outputs)
       tf.assert_rank_at_least(tf.convert_to_tensor(prob),1,message="prob is the fucking problem")
       epoch = open("./epoch.txt", "a")
-      epoch.write(i, "\n")
+      epoch.write(i)
       print("number:",i)
       c_1=1
       c_2=0.01
@@ -367,7 +367,7 @@ def main(unused_argv):
             input_fn=lambda: input_fn(False, FLAGS.data_dir, FLAGS.batch_size))
         
         with open("result","w") as q:
-             q.write(eval_results,'\n')
+             q.write(eval_results)
         #result = open("./result.txt", "a")
         #result.write(`i`+ ':' + `eval_results` +  "\n")
         print(eval_results)
