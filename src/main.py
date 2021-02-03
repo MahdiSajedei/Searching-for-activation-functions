@@ -45,7 +45,7 @@ parser.add_argument('--model_dir', type=str, default='../tmp/cifar10_model',
 #parser.add_argument('--resnet_size', type=int, default=20,
 #                    help='The size of the ResNet model to use. We set as 20 by default following the paper')
 
-parser.add_argument('--train_epochs', type=int, default=50,
+parser.add_argument('--train_epochs', type=int, default=20,
                     help='The number of epochs to train the RNN controller to generate the Activation function')
 
 parser.add_argument('--epochs_per_eval', type=int, default=5,
@@ -349,8 +349,8 @@ def main(unused_argv):
         'batch_size': FLAGS.batch_size,
       })
 
-      for _ in range(FLAGS.train_epochs // FLAGS.epochs_per_eval):
-      #for _ in range(2):
+      #for _ in range(FLAGS.train_epochs // FLAGS.epochs_per_eval):
+      for _ in range(4):
         tensors_to_log = {
             'learning_rate': 'learning_rate',
             'cross_entropy': 'cross_entropy',
