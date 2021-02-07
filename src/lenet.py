@@ -13,9 +13,24 @@ def batch_norm_relu(inputs, is_training, data_format):
   # We set fused=True for a significant performance boost. See
   # https://www.tensorflow.org/performance/performance_guide#common_fused_ops
   inputs = tf.layers.batch_normalization(
-      inputs=inputs, axis=1 if data_format == 'channels_first' else 3,
+      inputs=inputs, axis=1 if data_format == 'channels_first' else -1,
       momentum=_BATCH_NORM_DECAY, epsilon=_BATCH_NORM_EPSILON, center=True,
       scale=True, training=is_training, fused=True)
+  
+
+  #unary = {"1":lambda x:x ,"2":lambda x: -x, "3": tf.abs, "4":lambda x : tf.pow(x,2),"5":lambda x : tf.pow(x,3),
+   #        "6":tf.sqrt,"7":lambda x: tf.Variable(tf.truncated_normal([1], stddev=0.08))*x,
+    #       "8":lambda x : x + tf.Variable(tf.truncated_normal([1], stddev=0.08)),"9":lambda x: tf.log(tf.abs(x)+10e-8),
+     #      "10":tf.exp,"11":tf.sin,"12":tf.sinh,"13":tf.cosh,"14":tf.tanh,"15":tf.asinh,"16":tf.atan,"17":lambda x: tf.sin(x)/x,
+      #     "18":lambda x : tf.maximum(x,0),"19":lambda x : tf.minimum(x,0),"20":tf.sigmoid,"21":lambda x:tf.log(1+tf.exp(x)),
+       #    "22":lambda x:tf.exp(-tf.pow(x,2)),"23":tf.erf,24:lambda x: tf.Variable(tf.truncated_normal([1], stddev=0.08))}
+       
+  #binary = {"1":lambda x,y: x+y,"2":lambda x,y:x*y,"3":lambda x,y:x-y,"4":lambda x,y:x/(y+10e-8),
+   #      "5":lambda x,y:tf.maximum(x,y),"6":lambda x,y: tf.sigmoid(x)*y,"7":lambda x,y:tf.exp(-tf.Variable(tf.truncated_normal([1], stddev=0.08))*tf.pow(x-y,2)),
+    #     "8":lambda x,y:tf.exp(-tf.Variable(tf.truncated_normal([1], stddev=0.08))*tf.abs(x-y)),
+     #    "9":lambda x,y: tf.Variable(tf.truncated_normal([1], stddev=0.08))*x + (1-tf.Variable(tf.truncated_normal([1], stddev=0.08)))*y}
+        
+
 
   unary = {"1":lambda x:x ,"2":lambda x: -x, "3": lambda x: tf.maximum(x,0), "4":lambda x : tf.pow(x,2),"5":lambda x : tf.tanh(tf.cast(x,tf.float32))}
   binary = {"1":lambda x,y: tf.add(x,y),"2":lambda x,y:tf.multiply(x,y),"3":lambda x,y:tf.add(x,-y),"4":lambda x,y:tf.maximum(x,y),"5":lambda x,y: tf.sigmoid(x)*y}
@@ -25,10 +40,11 @@ def batch_norm_relu(inputs, is_training, data_format):
       activation = f.readline()
       activation = activation.split(" ")
 
-  inputs = binary[activation[8]](unary[activation[5]](binary[activation[4]](unary[activation[2]](input_fun[activation[0]](inputs)),unary[activation[3]](input_fun[activation[1]](inputs)))),unary[activation[7]](input_fun[activation[6]](inputs)))
+  #inputs = binary[activation[8]](unary[activation[5]](binary[activation[4]](unary[activation[2]](input_fun[activation[0]](inputs)),unary[activation[3]](input_fun[activation[1]](inputs)))),unary[activation[7]](input_fun[activation[6]](inputs)))
+  inputs = binary[activation[4]](unary[activation[2]](input_fun[activation[0]](inputs)),unary[activation[3]](input_fun[activation[1]](inputs)))
   #inputs = tf.nn.relu(inputs)
   functions = open("./functions.txt", "a")
-  functions.write(`inputs` +  "\n")
+  functions.write(str(inputs) +  "\n")
   
   return inputs
 
@@ -106,7 +122,7 @@ def cifar10_lenet5_generator(num_classes, data_format=None):
         inputs = batch_norm_relu(inputs, is_training, data_format)
 
         inputs = tf.layers.average_pooling2d(
-            inputs=inputs, pool_size=2 , strides=2 , padding='same',data_format=data_format)
+            inputs=inputs, pool_size=2 , strides=2 , padding='VALID',data_format=data_format)
         inputs = tf.identity(inputs, 'second_avg_pool')
         
         #inputs = tf.reshape(inputs, [-1, 400])

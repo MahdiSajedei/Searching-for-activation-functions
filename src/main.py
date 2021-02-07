@@ -25,12 +25,14 @@ import sys
 import tensorflow as tf
 import numpy as np
 
+import TensorFI as ti
 #import childnetwork as resnet_model
 import lenet as lenet_model
 from rnn_controller import Network
 from config import Config
 from parser import Parser
-from tensorflow.python import debug as tf_debug
+import datetime
+#from tensorflow.python import debug as tf_debug
 #import pdb; pdb.set_trace()
 
 parser = argparse.ArgumentParser()
@@ -45,10 +47,10 @@ parser.add_argument('--model_dir', type=str, default='../tmp/cifar10_model',
 #parser.add_argument('--resnet_size', type=int, default=20,
 #                    help='The size of the ResNet model to use. We set as 20 by default following the paper')
 
-parser.add_argument('--train_epochs', type=int, default=20,
+parser.add_argument('--train_epochs', type=int, default=50,
                     help='The number of epochs to train the RNN controller to generate the Activation function')
 
-parser.add_argument('--epochs_per_eval', type=int, default=5,
+parser.add_argument('--epochs_per_eval', type=int, default=10,
                     help='The number of epochs to run in between evaluations.')
 
 parser.add_argument('--batch_size', type=int, default=5,
@@ -283,11 +285,8 @@ def main(unused_argv):
       hyperparams = net.gen_hyperparams(outputs)
       tf.assert_rank_at_least(tf.convert_to_tensor(prob),1,message="prob is the fucking problem")
       #epoch = open("./epoch.txt", "a")
-      #epoch.write(str(i))
-      #epoch.write("\n")
-      epoch = open("./epoch.txt", "a")
-      epoch.write(`i`+ "\n")
-      print("number:",i)
+      #epoch.write(`i`+ "\n")
+      #print("number:",i)
       c_1=1
       c_2=0.01
       if i >0 :
@@ -325,11 +324,11 @@ def main(unused_argv):
       #run_config = tf.estimator.RunConfig().replace(session_config=tf.ConfigProto(log_device_placement=True),save_checkpoints_secs=1e9)
       print(sess.run(hyperparams))
       print(sess.run(value))
-      with open("value","w") as c:
-           c.write(' '.join(map(str,sess.run(value))))
-           c.write('\n')
+      #with open("value","w") as c:
+       #    c.write(' '.join(map(str,sess.run(value))))
+        #   c.write('\n')
       
-      with open("hyperparams","w") as d:
+      with open("hyperparams","a+") as d:
            d.writelines(' '.join(map(str,sess.run(hyperparams)))+'\n')
            
       
@@ -350,7 +349,7 @@ def main(unused_argv):
       })
 
       for _ in range(FLAGS.train_epochs // FLAGS.epochs_per_eval):
-      #for _ in range(4):
+      #for _ in range(1):
         tensors_to_log = {
             'learning_rate': 'learning_rate',
             'cross_entropy': 'cross_entropy',
@@ -363,18 +362,25 @@ def main(unused_argv):
         cifar_classifier.train(
             input_fn=lambda: input_fn(
                 True, FLAGS.data_dir, FLAGS.batch_size, FLAGS.epochs_per_eval))
-        print("second2")
+        #print("second2")
         # Evaluate the model and print results
         eval_results = cifar_classifier.evaluate(
             input_fn=lambda: input_fn(False, FLAGS.data_dir, FLAGS.batch_size))
+        log_str = "current time:  " + str(datetime.datetime.now().time()) + " epoch:  " + \
+                  str(i) + " eval_results:  " + str(eval_results) + " hyperparams:  " + str(sess.run(hyperparams))  + "\n"
+        result = open("result.txt", "a+")
+        result.write(log_str)
+        #log.write(log_str)
+        #log.close()
+        #print(log_str)
+        #result = open("./result.txt", "a")
+        #result.write(`i`+ ':' + `eval_results` +  "\n")
         
-        result = open("./result.txt", "a")
-        result.write(`i`+ ':' + `eval_results` +  "\n")
-        print(str(eval_results))
+        print(eval_results)
 
         old_prob = tf.identity(prob)
         old_value = tf.identity(value)
-        print("third3")
+        #print("third3")
 
         if i >0 :
           print("Training RNN")

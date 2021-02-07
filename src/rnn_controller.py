@@ -6,13 +6,17 @@ import utils
 import numpy as np
 import tensorflow as tf
 
+state_space = {'size': [5, 5, 5, 5, 5],
+               'space': [[1,2,3,4,5], [1,2,3,4,5],
+                         [1,2,3,4,5], [1,2,3,4,5], [1,2,3,4,5] ]}
+
 class Network(object):
     # My Concern is that some of these activation function might be numerically unstable due to the implementation
     # tf.log(1+exp(x)) is one of these things
 
     def __init__(self, config):
         self.config = config
-        self.n_steps = 10
+        self.n_steps = 5
         self.n_input, self.n_hidden =  4, 2
         self.state = tf.Variable(tf.random_normal(shape=[1, 4]))
         self.lstm = tf.contrib.rnn.BasicLSTMCell(self.n_hidden, forget_bias=1.0, state_is_tuple=False)
@@ -105,17 +109,29 @@ class Network(object):
         return out, output[-1],value
 
     def gen_hyperparams(self, output):
-        options = tf.constant([1,2,3,4], dtype=tf.int32)
+        #in1 = tf.constant([1,2,3,4], dtype=tf.int32)
+        in1 = tf.constant([1,2,3,4], dtype=tf.int32)
+        #in2 = tf.constant([1,2,3,4], dtype=tf.int32)
+        #un1 = tf.constant([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23], dtype=tf.int32)
+        #un2 = tf.constant([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23], dtype=tf.int32)
+        #bi = tf.constant([1,2,3,4,5,6,7,8,9], dtype=tf.int32)
         hyperparams = [1 for _ in range(self.n_steps)]
+        #op = open("output.txt", "a+")
+        #op.write(str(output) +  "\n")
         # Change the following based on number of hyperparameters to be predicted
         # Removing strides for now
-        hyperparams[0], hyperparams[1] = options[output[0]], options[output[1]]
-        hyperparams[2] = options[output[2]]  # Layer 1
-        hyperparams[3], hyperparams[4] = options[output[3]], options[output[5]]
-        hyperparams[5] = options[output[5]]  # Layer 2
-        hyperparams[6], hyperparams[7] = options[output[6]], options[output[7]]
-        hyperparams[8] = options[output[8]] # Layer 3
-        hyperparams[9] = options[output[9]] # FNN Layer
+        hyperparams[0] = in1[output[0]]
+        hyperparams[1] = in1[output[1]]  
+        hyperparams[2] = in1[output[2]]
+        hyperparams[3] = in1[output[3]]  
+        hyperparams[4] = in1[output[4]]
+        #hyperparams[0], hyperparams[1] = options[output[0]], options[output[1]]
+        #hyperparams[2] = options[output[2]]  # Layer 1
+        #hyperparams[3], hyperparams[4] = options[output[3]], options[output[5]]
+        #hyperparams[5] = options[output[5]]  # Layer 2
+        #hyperparams[6], hyperparams[7] = options[output[6]], options[output[7]]
+        #hyperparams[8] = options[output[8]] # Layer 3
+        #hyperparams[9] = options[output[9]] # FNN Layer
         return hyperparams
 
     def REINFORCE(self, prob):
