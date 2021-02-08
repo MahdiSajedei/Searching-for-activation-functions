@@ -6,13 +6,17 @@ import utils
 import numpy as np
 import tensorflow as tf
 
+state_space = {'size': [5, 5, 5, 5, 5],
+               'space': [[1,2,3,4,5], [1,2,3,4,5],
+                         [1,2,3,4,5], [1,2,3,4,5], [1,2,3,4,5] ]}
+
 class Network(object):
     # My Concern is that some of these activation function might be numerically unstable due to the implementation
     # tf.log(1+exp(x)) is one of these things
 
     def __init__(self, config):
         self.config = config
-        self.n_steps = 10
+        self.n_steps = 5
         self.n_input, self.n_hidden =  4, 2
         self.state = tf.Variable(tf.random_normal(shape=[1, 4]))
         self.lstm = tf.contrib.rnn.BasicLSTMCell(self.n_hidden, forget_bias=1.0, state_is_tuple=False)
@@ -35,12 +39,53 @@ class Network(object):
         # self.unary = {1:lambda x:x ,2:lambda x: -x, 3: lambda x: tf.maximum(x,0), 4:lambda x : tf.pow(x,2),5:tf.tanh}
         # binary = {1:lambda x,y: x+y,2:lambda x,y:x*y,3:lambda x,y:x-y,4:lambda x,y:tf.maximum(x,y),5:lambda x,y: tf.sigmoid(x)*y}
         # inputs = {1:lambda x:x , 2:lambda x:0, 3: lambda x:3.14159265,4: lambda x : 1, 5: lambda x: 1.61803399}
-
+    
     def weight_variable(self, shape, name):
-        return tf.Variable(tf.random_normal(shape=shape), name=name)
+        weight=tf.Variable(tf.random_normal(shape=shape), name=name)
+        #weight=tf.Variable(tf.ones(shape=shape), name=name)
+
+        #a= np.array([[1 , 1 , 1 ,1],
+        #             [1 , 1 , 1 ,1]])
+        #weight.assign_add(a)
+        #we = open("./weight.txt", "a")
+        #tf.print("tensors:", weight, output_stream=sys.stdout)
+        #we.write(`b`)
+        #wem = open("./weight_modify.txt", "a")
+        #a=tf.Print(weight,[weight])
+        #we.write(`a`)
+        #with tf.Session() as sess:
+         #    b = sess.run(weight, feed_dict={weight: 1})
+             #print(a)
+          #   we.write(`b`)
+             #a += 1
+             #wem.write(`a`)
+        #weight = weight + 1
+        #weight += 1
+        return weight
+
+
+    def weight_variablee(self, shape, name):
+        weight=tf.Variable(tf.random_normal(shape=shape), name=name)
+        #a= np.array([[1 ],
+        #             [1 ]])
+        #weight.assign_add(a)
+        return weight
 
     def bias_variable(self, shape, name):
-        return tf.Variable(tf.random_normal(shape=shape), name=name)
+        bias = tf.Variable(tf.random_normal(shape=shape), name=name)
+        #a= np.array([[1 ],
+         #            [1 ],
+          #           [1 ],
+           #          [1 ]])
+        #bias.assign_add(a)
+        return bias
+
+
+    def bias_variablee(self, shape, name):
+        bias = tf.Variable(tf.random_normal(shape=shape), name=name)
+        #a= np.array([1 ])
+        #bias.assign_add(a)
+        return bias
 
     def init_controller_vars(self):
         Wc = self.weight_variable(shape=[self.n_hidden, self.n_input], name="w_controller")
@@ -48,8 +93,8 @@ class Network(object):
         return Wc, bc
 
     def init_value_vars(self):
-        Wv = self.weight_variable(shape=[self.n_hidden, 1], name="w_controller")
-        bv = self.bias_variable(shape=[1], name="b_controller")
+        Wv = self.weight_variablee(shape=[self.n_hidden, 1], name="w_controller")
+        bv = self.bias_variablee(shape=[1], name="b_controller")
         return Wv, bv
 
     def neural_search(self):
@@ -64,17 +109,35 @@ class Network(object):
         return out, output[-1],value
 
     def gen_hyperparams(self, output):
-        options = tf.constant([1,2,3,4], dtype=tf.int32)
+        #in1 = tf.constant([1,2,3,4], dtype=tf.int32)
+        #in1 = tf.constant([1,2,3,4,5], dtype=tf.int32)
+        in1 = tf.random_uniform([5], minval=0, maxval=6, dtype=tf.int32)
+        #op = open("output.txt", "a+")
+        #op.write(str(in1) +  "\n")
+        #in2 = tf.constant([1,2,3,4], dtype=tf.int32)
+        #un1 = tf.constant([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23], dtype=tf.int32)
+        #un2 = tf.constant([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23], dtype=tf.int32)
+        #bi = tf.constant([1,2,3,4,5,6,7,8,9], dtype=tf.int32)
         hyperparams = [1 for _ in range(self.n_steps)]
         # Change the following based on number of hyperparameters to be predicted
         # Removing strides for now
-        hyperparams[0], hyperparams[1] = options[output[0]], options[output[1]]
-        hyperparams[2] = options[output[2]]  # Layer 1
-        hyperparams[3], hyperparams[4] = options[output[3]], options[output[5]]
-        hyperparams[5] = options[output[5]]  # Layer 2
-        hyperparams[6], hyperparams[7] = options[output[6]], options[output[7]]
-        hyperparams[8] = options[output[8]] # Layer 3
-        hyperparams[9] = options[output[9]] # FNN Layer
+        hyperparams[0] = in1[0]
+        hyperparams[1] = in1[1]  
+        hyperparams[2] = in1[2]
+        hyperparams[3] = in1[3]  
+        hyperparams[4] = in1[4]
+        #hyperparams[0] = in1[output[0]]
+        #hyperparams[1] = in1[output[1]]  
+        #hyperparams[2] = in1[output[2]]
+        #hyperparams[3] = in1[output[3]]  
+        #hyperparams[4] = in1[output[4]]
+        #hyperparams[0], hyperparams[1] = options[output[0]], options[output[1]]
+        #hyperparams[2] = options[output[2]]  # Layer 1
+        #hyperparams[3], hyperparams[4] = options[output[3]], options[output[5]]
+        #hyperparams[5] = options[output[5]]  # Layer 2
+        #hyperparams[6], hyperparams[7] = options[output[6]], options[output[7]]
+        #hyperparams[8] = options[output[8]] # Layer 3
+        #hyperparams[9] = options[output[9]] # FNN Layer
         return hyperparams
 
     def REINFORCE(self, prob):
