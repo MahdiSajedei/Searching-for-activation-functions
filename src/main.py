@@ -328,8 +328,8 @@ def main(unused_argv):
        #    c.write(' '.join(map(str,sess.run(value))))
         #   c.write('\n')
       
-      with open("hyperparams","a+") as d:
-           d.writelines(' '.join(map(str,sess.run(hyperparams)))+'\n')
+      #with open("hyperparams","a+") as d:
+      #     d.writelines(' '.join(map(str,sess.run(hyperparams)))+'\n')
            
       
   
@@ -349,7 +349,7 @@ def main(unused_argv):
       })
 
       #for _ in range(FLAGS.train_epochs // FLAGS.epochs_per_eval):
-      for _ in range(1):
+      for _ in range(2):
         tensors_to_log = {
             'learning_rate': 'learning_rate',
             'cross_entropy': 'cross_entropy',
