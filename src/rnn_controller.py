@@ -6,9 +6,9 @@ import utils
 import numpy as np
 import tensorflow as tf
 
-state_space = {'size': [5, 5, 5, 5, 5],
-               'space': [[1,2,3,4,5], [1,2,3,4,5],
-                         [1,2,3,4,5], [1,2,3,4,5], [1,2,3,4,5] ]}
+#state_space = {'size': [5, 5, 5, 5, 5],
+ #              'space': [[1,2,3,4,5], [1,2,3,4,5],
+  #                       [1,2,3,4,5], [1,2,3,4,5], [1,2,3,4,5] ]}
 
 class Network(object):
     # My Concern is that some of these activation function might be numerically unstable due to the implementation
@@ -111,7 +111,7 @@ class Network(object):
     def gen_hyperparams(self, output):
         #in1 = tf.constant([1,2,3,4], dtype=tf.int32)
         #in1 = tf.constant([1,2,3,4,5], dtype=tf.int32)
-        in1 = tf.random_uniform([5], minval=0, maxval=6, dtype=tf.int32)
+        in1 = tf.random_uniform([5], minval=1, maxval=6, dtype=tf.int32)
         #op = open("output.txt", "a+")
         #op.write(str(in1) +  "\n")
         #in2 = tf.constant([1,2,3,4], dtype=tf.int32)
