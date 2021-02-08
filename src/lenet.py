@@ -42,9 +42,9 @@ def batch_norm_relu(inputs, is_training, data_format):
 
   #inputs = binary[activation[8]](unary[activation[5]](binary[activation[4]](unary[activation[2]](input_fun[activation[0]](inputs)),unary[activation[3]](input_fun[activation[1]](inputs)))),unary[activation[7]](input_fun[activation[6]](inputs)))
   #inputs = binary[activation[4]]((unary[activation[2]](input_fun[activation[0]](inputs))),(unary[activation[3]](input_fun[activation[1]](inputs))))   #b[4](u1[2](x1[0]),u2[3](x2[1])) #core unit
-  inputs = binary[activation[2]]((unary[activation[0]](inputs)),(unary[activation[1]](inputs)))   #b[2](u1[0](x),u2[1](x)) #core unit
+  #inputs = binary[activation[2]]((unary[activation[0]](inputs)),(unary[activation[1]](inputs)))   #b[2](u1[0](x),u2[1](x)) #core unit
 
-  #inputs = tf.nn.relu(inputs)
+  inputs = tf.nn.relu(inputs)
   functions = open("./functions.txt", "a")
   functions.write(str(inputs) +  "\n")
   
