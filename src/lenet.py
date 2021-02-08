@@ -13,22 +13,22 @@ def batch_norm_relu(inputs, is_training, data_format):
   # We set fused=True for a significant performance boost. See
   # https://www.tensorflow.org/performance/performance_guide#common_fused_ops
   inputs = tf.layers.batch_normalization(
-      inputs=inputs, axis=1 if data_format == 'channels_first' else 3,
+      inputs=inputs, axis=1 if data_format == 'channels_first' else -1,
       momentum=_BATCH_NORM_DECAY, epsilon=_BATCH_NORM_EPSILON, center=True,
       scale=True, training=is_training, fused=True)
   
 
-  #unary = {"1":lambda x:x ,"2":lambda x: -x, "3": tf.abs, "4":lambda x : tf.pow(x,2),"5":lambda x : tf.pow(x,3),
-   #        "6":tf.sqrt,"7":lambda x: tf.Variable(tf.truncated_normal([1], stddev=0.08))*x,
-    #       "8":lambda x : x + tf.Variable(tf.truncated_normal([1], stddev=0.08)),"9":lambda x: tf.log(tf.abs(x)+10e-8),
-     #      "10":tf.exp,"11":tf.sin,"12":tf.sinh,"13":tf.cosh,"14":tf.tanh,"15":tf.asinh,"16":tf.atan,"17":lambda x: tf.sin(x)/x,
-      #     "18":lambda x : tf.maximum(x,0),"19":lambda x : tf.minimum(x,0),"20":tf.sigmoid,"21":lambda x:tf.log(1+tf.exp(x)),
-       #    "22":lambda x:tf.exp(-tf.pow(x,2)),"23":tf.erf,24:lambda x: tf.Variable(tf.truncated_normal([1], stddev=0.08))}
+ # unary = {"1":lambda x:x ,"2":lambda x: -x, "3":lambda x:tf.abs, "4":lambda x : tf.pow(x,2),"5":lambda x : tf.pow(x,3),
+  #         "6":lambda x:tf.sqrt,"7":lambda x: tf.Variable(tf.truncated_normal([1], stddev=0.08))*x,
+   #        "8":lambda x : x + tf.Variable(tf.truncated_normal([1], stddev=0.08)),"9":lambda x: tf.log(tf.abs(x)+10e-8),
+    #       "10":lambda x:tf.exp,"11":lambda x:tf.sin,"12":lambda x:tf.sinh,"13":lambda x:tf.cosh,"14":lambda x:tf.tanh,"15":lambda x:tf.asinh,"16":lambda x:tf.atan,"17":lambda x: tf.sin(x)/x,
+     #      "18":lambda x : tf.maximum(x,0),"19":lambda x : tf.minimum(x,0),"20":tf.sigmoid,"21":lambda x:tf.log(1+tf.exp(x)),
+      #     "22":lambda x:tf.exp(-tf.pow(x,2)),"23":lambda x:tf.erf,"24":lambda x: tf.Variable(tf.truncated_normal([1], stddev=0.08))}
        
-  #binary = {"1":lambda x,y: x+y,"2":lambda x,y:x*y,"3":lambda x,y:x-y,"4":lambda x,y:x/(y+10e-8),
-   #      "5":lambda x,y:tf.maximum(x,y),"6":lambda x,y: tf.sigmoid(x)*y,"7":lambda x,y:tf.exp(-tf.Variable(tf.truncated_normal([1], stddev=0.08))*tf.pow(x-y,2)),
-    #     "8":lambda x,y:tf.exp(-tf.Variable(tf.truncated_normal([1], stddev=0.08))*tf.abs(x-y)),
-     #    "9":lambda x,y: tf.Variable(tf.truncated_normal([1], stddev=0.08))*x + (1-tf.Variable(tf.truncated_normal([1], stddev=0.08)))*y}
+ # binary = {"1":lambda x,y: x+y,"2":lambda x,y:x*y,"3":lambda x,y:x-y,"4":lambda x,y:x/(y+10e-8),
+  #       "5":lambda x,y:tf.maximum(x,y),"6":lambda x,y: tf.sigmoid(x)*y,"7":lambda x,y:tf.exp(-tf.Variable(tf.truncated_normal([1], stddev=0.08))*tf.pow(x-y,2)),
+   #      "8":lambda x,y:tf.exp(-tf.Variable(tf.truncated_normal([1], stddev=0.08))*tf.abs(x-y)),
+    #     "9":lambda x,y: tf.Variable(tf.truncated_normal([1], stddev=0.08))*x + (1-tf.Variable(tf.truncated_normal([1], stddev=0.08)))*y}
         
 
 
@@ -41,7 +41,9 @@ def batch_norm_relu(inputs, is_training, data_format):
       activation = activation.split(" ")
 
   #inputs = binary[activation[8]](unary[activation[5]](binary[activation[4]](unary[activation[2]](input_fun[activation[0]](inputs)),unary[activation[3]](input_fun[activation[1]](inputs)))),unary[activation[7]](input_fun[activation[6]](inputs)))
-  inputs = binary[activation[4]]((unary[activation[2]](input_fun[activation[0]](inputs))),(unary[activation[3]](input_fun[activation[1]](inputs))))   #b(u1(x1),u2(x2)) #core unit
+  #inputs = binary[activation[4]]((unary[activation[2]](input_fun[activation[0]](inputs))),(unary[activation[3]](input_fun[activation[1]](inputs))))   #b[4](u1[2](x1[0]),u2[3](x2[1])) #core unit
+  inputs = binary[activation[2]]((unary[activation[0]](inputs)),(unary[activation[1]](inputs)))   #b[2](u1[0](x),u2[1](x)) #core unit
+
   #inputs = tf.nn.relu(inputs)
   functions = open("./functions.txt", "a")
   functions.write(str(inputs) +  "\n")

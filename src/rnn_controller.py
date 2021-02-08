@@ -115,15 +115,15 @@ class Network(object):
         #op = open("output.txt", "a+")
         #op.write(str(in1) +  "\n")
         #in2 = tf.constant([1,2,3,4], dtype=tf.int32)
-        #un1 = tf.constant([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23], dtype=tf.int32)
-        #un2 = tf.constant([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23], dtype=tf.int32)
+        #un1 = tf.constant([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24], dtype=tf.int32)
+        #un2 = tf.constant([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24], dtype=tf.int32)
         #bi = tf.constant([1,2,3,4,5,6,7,8,9], dtype=tf.int32)
         hyperparams = [1 for _ in range(self.n_steps)]
         # Change the following based on number of hyperparameters to be predicted
         # Removing strides for now
-        hyperparams[0] = in1[0]
-        hyperparams[1] = in1[1]  
-        hyperparams[2] = in1[2]
+        hyperparams[0] = in1[0] #u1
+        hyperparams[1] = in1[1] #u2 
+        hyperparams[2] = in1[2] #b1
         hyperparams[3] = in1[3]  
         hyperparams[4] = in1[4]
         #hyperparams[0] = in1[output[0]]
