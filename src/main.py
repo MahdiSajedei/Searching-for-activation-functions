@@ -348,8 +348,8 @@ def main(unused_argv):
         'batch_size': FLAGS.batch_size,
       })
 
-      #for _ in range(FLAGS.train_epochs // FLAGS.epochs_per_eval):
-      for _ in range(2):
+      for _ in range(FLAGS.train_epochs // FLAGS.epochs_per_eval):
+      #for _ in range(2):
         tensors_to_log = {
             'learning_rate': 'learning_rate',
             'cross_entropy': 'cross_entropy',
