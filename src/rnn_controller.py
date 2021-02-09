@@ -41,8 +41,8 @@ class Network(object):
         # inputs = {1:lambda x:x , 2:lambda x:0, 3: lambda x:3.14159265,4: lambda x : 1, 5: lambda x: 1.61803399}
     
     def weight_variable(self, shape, name):
-        weight=tf.Variable(tf.random_normal(shape=shape), name=name)
-        #weight=tf.Variable(tf.ones(shape=shape), name=name)
+        #weight=tf.Variable(tf.random_normal(shape=shape), name=name)
+        weight=tf.Variable(tf.ones(shape=shape), name=name)
 
         #a= np.array([[1 , 1 , 1 ,1],
         #             [1 , 1 , 1 ,1]])
@@ -64,12 +64,12 @@ class Network(object):
         return weight
 
 
-    def weight_variablee(self, shape, name):
-        weight=tf.Variable(tf.random_normal(shape=shape), name=name)
+    #def weight_variablee(self, shape, name):
+     #   weight=tf.Variable(tf.random_normal(shape=shape), name=name)
         #a= np.array([[1 ],
         #             [1 ]])
         #weight.assign_add(a)
-        return weight
+      #  return weight
 
     def bias_variable(self, shape, name):
         bias = tf.Variable(tf.random_normal(shape=shape), name=name)
@@ -93,7 +93,7 @@ class Network(object):
         return Wc, bc
 
     def init_value_vars(self):
-        Wv = self.weight_variablee(shape=[self.n_hidden, 1], name="w_controller")
+        Wv = self.weight_variable(shape=[self.n_hidden, 1], name="w_controller")
         bv = self.bias_variablee(shape=[1], name="b_controller")
         return Wv, bv
 
