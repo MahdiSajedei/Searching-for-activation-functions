@@ -81,11 +81,11 @@ class Network(object):
         return bias
 
 
-    def bias_variablee(self, shape, name):
-        bias = tf.Variable(tf.random_normal(shape=shape), name=name)
+    #def bias_variablee(self, shape, name):
+     #   bias = tf.Variable(tf.random_normal(shape=shape), name=name)
         #a= np.array([1 ])
         #bias.assign_add(a)
-        return bias
+      #  return bias
 
     def init_controller_vars(self):
         Wc = self.weight_variable(shape=[self.n_hidden, self.n_input], name="w_controller")
@@ -94,7 +94,7 @@ class Network(object):
 
     def init_value_vars(self):
         Wv = self.weight_variable(shape=[self.n_hidden, 1], name="w_controller")
-        bv = self.bias_variablee(shape=[1], name="b_controller")
+        bv = self.bias_variable(shape=[1], name="b_controller")
         return Wv, bv
 
     def neural_search(self):
