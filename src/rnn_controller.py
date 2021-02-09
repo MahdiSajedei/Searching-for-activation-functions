@@ -16,7 +16,7 @@ class Network(object):
 
     def __init__(self, config):
         self.config = config
-        self.n_steps = 3
+        self.n_steps = 6
         self.n_input, self.n_hidden =  4, 2
         self.state = tf.Variable(tf.random_normal(shape=[1, 4]))
         self.lstm = tf.contrib.rnn.BasicLSTMCell(self.n_hidden, forget_bias=1.0, state_is_tuple=False)
@@ -98,6 +98,7 @@ class Network(object):
         return Wv, bv
 
     def neural_search(self):
+        #inp = tf.constant(np.ones((1, 4), dtype="float32"))
         inp = tf.constant(np.ones((1, 4), dtype="float32"))
         output = list()
         for _ in range(self.n_steps):
@@ -111,7 +112,7 @@ class Network(object):
     def gen_hyperparams(self, output):
         #in1 = tf.constant([1,2,3,4], dtype=tf.int32)
         #in1 = tf.constant([1,2,3,4,5], dtype=tf.int32)
-        in1 = tf.random_uniform([3], minval=1, maxval=6, dtype=tf.int32)
+        in1 = tf.random_uniform([6], minval=1, maxval=6, dtype=tf.int32)
         #op = open("output.txt", "a+")
         #op.write(str(in1) +  "\n")
         #in2 = tf.constant([1,2,3,4], dtype=tf.int32)
@@ -124,8 +125,9 @@ class Network(object):
         hyperparams[0] = in1[0] #u1
         hyperparams[1] = in1[1] #u2 
         hyperparams[2] = in1[2] #b1
-        #hyperparams[3] = in1[3]  
-        #hyperparams[4] = in1[4]
+        hyperparams[3] = in1[3] #u3
+        hyperparams[4] = in1[4] #u4
+        hyperparams[5] = in1[5] #b2
         #hyperparams[0] = in1[output[0]]
         #hyperparams[1] = in1[output[1]]  
         #hyperparams[2] = in1[output[2]]
